@@ -3,6 +3,7 @@
 {% block subtitle %}Login{% endblock subtitle %}
 
 {% block content %}
+Demo: user="admin", password="password"<br>
 <form method="POST">
     {% if error %}<p>{{ error }}</p>{% endif %}
     <label for="name-input">Username:</label><input id="name-input" type="text" name="name"><br>

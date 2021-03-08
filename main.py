@@ -8,6 +8,12 @@ from model import Task, User
 
 app = Flask(__name__)
 app.secret_key = b'\x9d\xb1u\x08%\xe0\xd0p\x9bEL\xf8JC\xa3\xf4J(hAh\xa4\xcdw\x12S*,u\xec\xb8\xb8'
+# app.secret_key = os.environ.get('SECRET_KEY' ).encode()
+
+@app.route('/')
+def index():
+    return render_template('base.jinja2')
+
 
 @app.route('/all')
 def all_tasks():
@@ -15,14 +21,14 @@ def all_tasks():
 
 @app.route('/create', methods=['GET', 'POST'])
 def create():
-    if 'username' not in session:
-        return redirect(url_for('login'))
-    # If the method is POST:
-    #    then use the name that the user submitted to create a
-    #    new task and save it
-    #    Also, redirect the user to the list of all tasks
-    # Otherwise, just render the create.jinja2 template 
-    print(f'method:{request.method}')
+
+    if request.method == 'POST':
+        task = Task(name=request.form['name'])
+        task.save()
+
+        return redirect(url_for('all_tasks'))
+    else:
+        return render_template('create.jinja2')
 
 
     if request.method == 'POST':
@@ -38,6 +44,7 @@ def create():
 def login():
     if request.method == 'POST':
         user = User.select().where(User.name == request.form['name']).get()
+        print(user)
 
         if user and pbkdf2_sha256.verify(request.form['password'], user.password):
             session['username'] = request.form['name']
